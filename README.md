@@ -1,4 +1,4 @@
-# Prompter
+# PromptGraph
 
 A multi-agent AI system that transforms natural-language project ideas into complete prompt architectures. Given a description like _"a quizzing platform for medical students"_, Prompter decomposes the project into modules, generates tailored system prompts with techniques like chain-of-thought and few-shot learning, designs inter-agent communication, scores quality across five dimensions, and outputs production-ready configuration files.
 
