@@ -36,16 +36,58 @@ def main(
     """Prompter — build prompt architectures from project ideas."""
 
 
-def _load_idea(idea: str) -> str:
-    """Load idea from argument — supports inline text or file path."""
-    path = Path(idea)
-    if path.exists() and path.suffix in (".txt", ".md"):
+_IDEA_FILE_SUFFIXES = {".txt", ".md", ".markdown"}
+
+
+def _looks_like_path(idea: str) -> bool:
+    """True when the argument is more likely a filesystem path than free-form text."""
+    if not idea or idea.isspace():
+        return False
+    path = Path(idea).expanduser()
+    if path.is_absolute():
+        return True
+    if "/" in idea or "\\" in idea:
+        return True
+    if path.suffix.lower() in _IDEA_FILE_SUFFIXES:
+        return True
+    return False
+
+
+def _load_idea(idea: str) -> tuple[str, Path | None]:
+    """Load idea from argument — supports inline text or file path.
+
+    Returns:
+        (idea_text, source_path) where source_path is set when content was read
+        from a file (for slug / provenance), else None.
+
+    Path-shaped arguments that do not resolve to a readable file raise Exit(1)
+    instead of silently treating the path string as the project idea.
+    """
+    path = Path(idea).expanduser()
+
+    if path.exists():
+        if path.is_dir():
+            console.print(
+                f"[red]Error: Input path is a directory, not a file: {path}[/red]"
+            )
+            raise typer.Exit(code=1)
+        if not path.is_file():
+            console.print(f"[red]Error: Input path is not a readable file: {path}[/red]")
+            raise typer.Exit(code=1)
         text = path.read_text(encoding="utf-8").strip()
         if not text:
-            console.print("[red]Error: Input file is empty.[/red]")
+            console.print(f"[red]Error: Input file is empty: {path}[/red]")
             raise typer.Exit(code=1)
-        return text
-    return idea
+        return text, path
+
+    if _looks_like_path(idea):
+        console.print(
+            f"[red]Error: Input file not found: {idea}[/red]\n"
+            "Pass a path to an existing .md/.txt file, or a plain-text project idea."
+        )
+        raise typer.Exit(code=1)
+
+    return idea, None
 
 
 def _validate_idea(idea: str) -> None:
@@ -215,7 +257,10 @@ def _run_pipeline(graph, state: dict, run_id: str, verbose: bool) -> dict:
 
 @app.command()
 def generate(
-    idea: str = typer.Argument(..., help="Project idea description (text or path to .txt file)."),
+    idea: str = typer.Argument(
+        ...,
+        help="Project idea (inline text, or path to a .md/.txt file).",
+    ),
     output_dir: Optional[str] = typer.Option(None, "--output", "-o", help="Output directory path."),
     resume: Optional[str] = typer.Option(None, "--resume", help="Resume from checkpoint path."),
     verbose: bool = typer.Option(False, "--verbose", help="Enable detailed debug output."),
@@ -284,9 +329,9 @@ def generate(
         return
 
     # ── New execution path ───────────────────────────────────────────
-    idea_text = _load_idea(idea)
+    idea_text, source_path = _load_idea(idea)
     _validate_idea(idea_text)
-    slug = _slugify(idea_text)
+    slug = _slugify(source_path.stem if source_path is not None else idea_text)
 
     # Auto-derive output subfolder from task name (unless user specified --output)
     if not output_dir:
@@ -331,7 +376,10 @@ def generate(
 
 @app.command()
 def interactive(
-    idea: str = typer.Argument(..., help="Project idea description (text or path to .txt file)."),
+    idea: str = typer.Argument(
+        ...,
+        help="Project idea (inline text, or path to a .md/.txt file).",
+    ),
     output_dir: Optional[str] = typer.Option(None, "--output", "-o", help="Output directory path."),
     verbose: bool = typer.Option(False, "--verbose", help="Enable detailed debug output."),
 ) -> None:
@@ -345,9 +393,9 @@ def interactive(
 
     setup_logging(verbose)
 
-    idea_text = _load_idea(idea)
+    idea_text, source_path = _load_idea(idea)
     _validate_idea(idea_text)
-    slug = _slugify(idea_text)
+    slug = _slugify(source_path.stem if source_path is not None else idea_text)
 
     # Load settings
     try:

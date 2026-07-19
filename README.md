@@ -113,9 +113,10 @@ prompter generate "your project idea" -o ./my-output
 
 ```bash
 prompter interactive "your project idea"
+prompter interactive docs/examples/mock_interview_coach.md -o ./output/interview-coach
 ```
 
-This pauses after the Analyzer stage to show you the module breakdown. You can approve, modify, or cancel before the pipeline continues.
+Same idea argument as `generate` (inline text **or** path to a `.md`/`.txt` file). This pauses after the Analyzer stage to show you the module breakdown. You can approve, modify, or cancel before the pipeline continues.
 
 ### Resume from checkpoint
 
