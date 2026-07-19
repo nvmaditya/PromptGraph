@@ -89,6 +89,20 @@ prompter generate "a quizzing platform for medical students"
 prompter generate path/to/idea.txt
 ```
 
+### Example project ideas
+
+Ready-made idea fixtures you can feed straight into the pipeline:
+
+| Example | Path |
+| ------- | ---- |
+| Mock technical interview coach | [`docs/examples/mock_interview_coach.md`](docs/examples/mock_interview_coach.md) |
+| Text RPG dungeon master engine | [`docs/examples/rpg_dungeon_master.md`](docs/examples/rpg_dungeon_master.md) |
+
+```bash
+prompter generate docs/examples/mock_interview_coach.md -o ./output/interview-coach
+prompter generate docs/examples/rpg_dungeon_master.md -o ./output/rpg-dm
+```
+
 ### Custom output directory
 
 ```bash
