@@ -6,7 +6,7 @@ Built with [LangGraph](https://github.com/langchain-ai/langgraph) for orchestrat
 
 ## Architecture
 
-![PromptGraph Multi-Agent Architecture](docs/architecture.png)
+![PromptGraph Multi-Agent Architecture](docs/architecture.gif)
 
 **6-agent pipeline:**
 
