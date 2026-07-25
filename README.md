@@ -27,14 +27,14 @@ Project Idea
 
 **6-agent pipeline:**
 
-| Agent                      | Role                                                                                            |
-| -------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Analyzer**               | Decomposes the idea into a `ModuleMap` with domain classification and interaction model         |
-| **Architect**              | Generates `PromptArtifact` per AI module — technique selection, context slots, eval criteria    |
-| **Communication Designer** | Creates an `InterAgentMap` — shared memory schema, handoff conditions, triggers                 |
-| **Critic**                 | Scores each prompt on 5 dimensions (clarity, compliance, robustness, creativity, measurability) |
-| **Refiner**                | Iteratively revises prompts that score below the quality threshold                              |
-| **Packager**               | Assembles final JSON config, Markdown spec, and Python scaffolding                              |
+| Agent | Role |
+| ----- | ---- |
+| **Analyzer** | Decomposes the idea into a `ModuleMap` with domain classification and interaction model |
+| **Architect** | Generates `PromptArtifact` per AI module — technique selection, context slots, eval criteria |
+| **Communication Designer** | Creates an `InterAgentMap` — shared memory schema, handoff conditions, triggers |
+| **Critic** | Scores each prompt on 5 dimensions (clarity, compliance, robustness, creativity, measurability) |
+| **Refiner** | Iteratively revises prompts that score below the quality threshold |
+| **Packager** | Assembles final JSON config, Markdown spec, and Python scaffolding |
 
 The Critic-Refiner loop runs up to 3 iterations (configurable), only revising prompts that haven't passed.
 
@@ -42,8 +42,8 @@ The Critic-Refiner loop runs up to 3 iterations (configurable), only revising pr
 
 ```bash
 # Clone
-git clone https://github.com/nvmaditya/Prompter.git
-cd Prompter
+git clone https://github.com/nvmaditya/PromptGraph.git
+cd PromptGraph
 
 # Install with dev dependencies
 pip install -e ".[dev]"
@@ -66,14 +66,14 @@ GROQ_MODEL=llama-3.3-70b-versatile
 
 Optional overrides:
 
-| Variable                     | Default                   | Description                                               |
-| ---------------------------- | ------------------------- | --------------------------------------------------------- |
-| `GROQ_MODEL`                 | `llama-3.3-70b-versatile` | Groq model to use (`llama-3.1-8b-instant` also supported) |
-| `PROMPTER_QUALITY_THRESHOLD` | `7.0`                     | Minimum critic score (0-10) for a prompt to pass          |
-| `PROMPTER_MAX_ITERATIONS`    | `3`                       | Max critic-refiner loop iterations                        |
-| `PROMPTER_RATE_LIMIT_TIER`   | `free`                    | `free` (adds delays between requests) or `paid`           |
-| `PROMPTER_LLM_MAX_TOKENS`    | `4096`                    | Max response tokens per LLM call                          |
-| `PROMPTER_VERBOSE`           | `false`                   | Enable debug logging                                      |
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model to use (`llama-3.1-8b-instant` also supported) |
+| `PROMPTER_QUALITY_THRESHOLD` | `7.0` | Minimum critic score (0-10) for a prompt to pass |
+| `PROMPTER_MAX_ITERATIONS` | `3` | Max critic-refiner loop iterations |
+| `PROMPTER_RATE_LIMIT_TIER` | `free` | `free` (adds delays between requests) or `paid` |
+| `PROMPTER_LLM_MAX_TOKENS` | `4096` | Max response tokens per LLM call |
+| `PROMPTER_VERBOSE` | `false` | Enable debug logging |
 
 ## Usage
 
@@ -156,10 +156,27 @@ scaffolding/
 └── README.md          # Setup instructions
 ```
 
+## Marketing & Docs Web Site
+
+The project includes a web app built with React, Vite, and Vitest located under `site/`.
+
+- **Live Demo**: [https://nvmaditya.github.io/PromptGraph/](https://nvmaditya.github.io/PromptGraph/)
+- **Local Development**:
+  ```bash
+  cd site
+  npm install
+  npm run dev
+  ```
+- **Run Site Tests**:
+  ```bash
+  cd site
+  npx vitest run
+  ```
+
 ## Project Structure
 
 ```
-prompter/
+PromptGraph/
 ├── prompter/
 │   ├── agents/              # 6 agent implementations
 │   ├── llm/                 # LLM client with 3-layer retry
@@ -171,9 +188,15 @@ prompter/
 │   ├── config.py            # Settings via pydantic-settings
 │   ├── graph.py             # LangGraph StateGraph builder
 │   └── state.py             # PipelineState TypedDict
+├── site/                    # React + Vite documentation site
+│   ├── src/
+│   │   ├── components/      # Nav, Hero, Pipeline, Mechanism, Quickstart, OpenSource, Footer
+│   │   ├── hooks/           # Scroll reveal hooks
+│   │   └── test/            # Vitest unit tests
+│   └── package.json
 ├── tests/
-│   ├── unit/                # 5 test files (model, config, state, LLM, tokens)
-│   ├── integration/         # 9 test files (all agents, graph, checkpoint, CLI)
+│   ├── unit/                # Unit tests (models, config, state, LLM, tokens)
+│   ├── integration/         # Integration tests (agents, graph, checkpoint, CLI)
 │   └── regression/          # Real API smoke tests
 ├── docs/                    # PRD, SRS, architecture docs
 ├── .env.example
@@ -183,14 +206,14 @@ prompter/
 ## Testing
 
 ```bash
-# Run all mocked tests (fast, no API calls) — 190 tests
-pytest tests/ -m "not slow" -v
+# Run mocked tests via uv (fast, no API calls) — 206 passed
+uv run --extra dev pytest tests/ -m "not slow" -v
 
 # Run real API tests (requires valid GROQ_API_KEY) — 4 tests
-pytest tests/regression/ -m slow -v
+uv run --extra dev pytest tests/regression/ -m slow -v
 
 # Run everything
-pytest tests/ -v
+uv run --extra dev pytest tests/ -v
 ```
 
 The test suite covers:
