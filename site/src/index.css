@@ -211,9 +211,6 @@ a:focus-visible {
   transition: border-color 0.2s, background 0.2s;
   user-select: none;
   max-width: 100%;
-  flex-wrap: wrap;
-}
-  user-select: none;
 }
 .hero-cta:hover {
   border-color: var(--accent);
