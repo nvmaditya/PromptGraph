@@ -6,24 +6,7 @@ Built with [LangGraph](https://github.com/langchain-ai/langgraph) for orchestrat
 
 ## Architecture
 
-```
-Project Idea
-     │
-     ▼
-┌──────────┐    ┌───────────┐    ┌──────────────────────┐
-│ Analyzer │───▶│ Architect │───▶│ Communication Designer│
-└──────────┘    └───────────┘    └──────────────────────┘
-                                          │
-                                          ▼
-                                    ┌──────────┐
-                              ┌────▶│ Packager │──▶ Output
-                              │     └──────────┘
-                              │
-                         ┌────┴───┐     ┌─────────┐
-                         │ Critic │◀───▶│ Refiner │
-                         └────────┘     └─────────┘
-                          (quality loop)
-```
+![PromptGraph Multi-Agent Architecture](docs/architecture.png)
 
 **6-agent pipeline:**
 
