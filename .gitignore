@@ -31,6 +31,8 @@ Thumbs.db
 # Project-specific
 .prompter_state/
 /output/
+skills/
+.gemini/
 
 # Claude temp files
 tmpclaude-*
